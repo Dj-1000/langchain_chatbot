@@ -1,0 +1,80 @@
+{% extends 'base.html' %} {% block title %}Chat with bot | ProCare{% endblock %}
+{% block content %}
+
+<!-- <div id="user-hello" class="text-dark">
+  <p>Welcome {{user}}</p>
+</div> -->
+<hr />
+
+
+<div class="container ">
+  <div class="row d-flex justify-content-center">
+    <div class="col-6">
+      <form>
+        <div class="form-group">
+          <h4>ProCare Chatbot</h4>
+          
+          <textarea class="form-control" id="chat-log" readonly rows="5">Hi! How can I help you?
+          </textarea><br>
+          <input class="form-control" id="chat-message-input" type="text"><br>
+          <button style="width: 20%;display: block;margin:0 auto;" class="btn btn-primary" type="submit" id="chat-message-submit">Send</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+<!-- <script type="text/javascript">!function(t,e){t.artibotApi={l:[],t:[],on:function(){this.l.push(arguments)},trigger:function(){this.t.push(arguments)}};var a=!1,i=e.createElement("script");i.async=!0,i.type="text/javascript",i.src="https://app.artibot.ai/loader.js",e.getElementsByTagName("head").item(0).appendChild(i),i.onreadystatechange=i.onload=function(){if(!(a||this.readyState&&"loaded"!=this.readyState&&"complete"!=this.readyState)){new window.ArtiBot({i:"619ba0cf-4d35-451b-a529-9a58f32e49c6"});a=!0}}}(window,document);</script> -->
+
+{{room_id | json_script:"room-id"}}
+<script>
+  const roomName = JSON.parse(document.getElementById("room-id").textContent);
+
+  const chatSocket = new WebSocket(
+    "ws://" + window.location.host + "/ws/chat/" + roomName + "/"
+  );
+
+  chatSocket.onclose = function (e) {
+    console.error("Chat socket closed unexpectedly");
+  };
+
+  chatSocket.onmessage = function (e) {
+    const data = JSON.parse(e.data);
+    console.log("Received message:", data);
+
+    const chatLog = document.querySelector("#chat-log");
+    chatLog.value += data.message + "\n";
+    // scroll 'chatLog' to the bottom
+    chatLog.scrollTop = chatLog.scrollHeight;
+  };
+
+  document.querySelector("#chat-message-input").focus();
+  document.querySelector("#chat-message-input").onkeyup = function (e) {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      document.querySelector("#chat-message-submit").click();
+    }
+  };
+
+  chatSocket.onopen = function (e) {
+    console.log("WebSocket connection opened!");
+    document.querySelector("#chat-message-submit").onclick = function (e) {
+      e.preventDefault();
+      const messageInputDom = document.querySelector("#chat-message-input");
+      const message = messageInputDom.value;
+      console.log("Sending message:", message);
+      chatSocket.send(
+        JSON.stringify({
+          message: message,
+        })
+      );
+      messageInputDom.value = "";
+    };
+  };
+</script>
+{% endblock %}
+
+            <!-- {% if prev_messages %}
+            {% for message in prev_messages %}
+            {{ message.sent_by }} - {{ message.content }}
+            {% endfor %}
+            {% endif %} -->

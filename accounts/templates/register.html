@@ -1,0 +1,43 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %}Register | Pro Care{% endblock %}
+
+<div style="height: 480 px;width: 50%;">
+    {% block content %}
+    {% if messages %}
+    <ul class="messages">
+        {% for message in messages %}
+            <!-- <li class="{{ message.tags }}">{{ message }}</li> -->
+            <script>
+                showPopup("{{ message }}");
+            </script>
+        {% endfor %}
+    </ul>
+    {% endif %}
+    
+    <div class="container bg-light shadow-md p-5 form-layout">
+        <h3>Create your account</h3>
+        <br>
+    
+        
+        <form method="POST" autocomplete="on" class="">
+            {% csrf_token %}
+            {{form | crispy }}
+            <br>
+            <div class = "col text-center">
+                <button type="submit" class="btn btn-primary w-100 btn-block p-2">
+                    Create account 
+                </button>
+            </div>
+            
+        </form>
+        <br>
+        <div class="text-center">
+            <p>Already have an account?</p>
+            <a href="{% url 'login' %}">Log-In</a>
+           
+        </div>
+    </div>
+    {% endblock %}
+</div>

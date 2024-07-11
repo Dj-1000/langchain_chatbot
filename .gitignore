@@ -1,0 +1,6 @@
+/venv
+/Pro Care
+/media
+.env
+__pycache__
+migrations
