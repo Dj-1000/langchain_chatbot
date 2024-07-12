@@ -64,4 +64,3 @@ def upload_file(request):
         form = FileForm()
     return render(request, 'upload_file.html', {'form': form})
     
-

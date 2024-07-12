@@ -60,3 +60,10 @@ def dashboard(request):
         print("User :",user)
         users = User.objects.exclude(username = user)
         return render(request,'dashboard.html',{'users':users})
+    
+
+
+
+
+
+

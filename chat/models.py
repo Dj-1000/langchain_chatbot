@@ -36,6 +36,7 @@ class Messages(models.Model):
 class Folder(models.Model):
     name = models.CharField(max_length=255)
     parent = models.ForeignKey('self', null=True, blank=True, on_delete=models.CASCADE, related_name='subfolders')
+    description = models.CharField(max_length=500,blank=True)
     def __str__(self) -> str:
         if self.parent:
             return self.name + ' / ' + self.parent.name

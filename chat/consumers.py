@@ -3,6 +3,7 @@ import json
 from channels.db import database_sync_to_async
 from .models import Room,Messages
 from django.db.models import Q
+from .openai import get_intent_scores
 
 class ChatRoomConsumer(AsyncWebsocketConsumer):
     async def connect(self):
@@ -34,7 +35,7 @@ class ChatRoomConsumer(AsyncWebsocketConsumer):
         text_data_json = json.loads(text_data)
         message = text_data_json["message"]
         message = str(message).strip()
-    
+
         if message:
             await database_sync_to_async(Messages.objects.create)(
                 room = self.room,
@@ -43,7 +44,7 @@ class ChatRoomConsumer(AsyncWebsocketConsumer):
             )
         # Send message to room group
         print("Sending messages to room: ",message)
-
+        
         await self.channel_layer.group_send(
             self.room_group_name,
             {
@@ -54,12 +55,17 @@ class ChatRoomConsumer(AsyncWebsocketConsumer):
 
     # Receive message from room group
     async def chat_message(self, event):
+        intent_score = ""
         msg = event["message"]
+        if msg:
+            intent_score = await get_intent_scores(msg)
 
-        print("Recieved from group:",msg)
+            
+            print("Recieved from group:",msg)
+            print("INTENT :",str(intent_score))
         # Send message to WebSocket
         await self.send(text_data=json.dumps({
-            "message": msg
+            "message": intent_score
         }))
 
 

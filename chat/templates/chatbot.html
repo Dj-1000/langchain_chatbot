@@ -3,10 +3,10 @@
 
 <!-- <div id="user-hello" class="text-dark">
   <p>Welcome {{user}}</p>
-</div> -->
+ </div> -->
 <hr />
 
-
+{% comment %} 
 <div class="container ">
   <div class="row d-flex justify-content-center">
     <div class="col-6">
@@ -42,7 +42,7 @@
     console.log("Received message:", data);
 
     const chatLog = document.querySelector("#chat-log");
-    chatLog.value += data.message + "\n";
+    chatLog.value += JSON.stringify(data.message) + "\n";
     // scroll 'chatLog' to the bottom
     chatLog.scrollTop = chatLog.scrollHeight;
   };
@@ -70,7 +70,88 @@
       messageInputDom.value = "";
     };
   };
-</script>
+</script>  {% endcomment %}
+
+
+{% comment %} {% block content %} {% endcomment %}
+            
+            <div class="container mt-5">
+              <div class="row d-flex justify-content-center">
+                <div class="col-12 col-lg-8">
+                  <div class="card shadow-sm">
+                    <div class="card-header bg-primary text-white pt-4 pb-4 text-center">
+                      <h4 class="mb-0">ProCare Chatbot</h4>
+                    </div>
+                    <div class="card-body mt-3">
+                      <div id="chat-log" class="border p-3 mb-5" style="height: 300px; overflow-y: scroll; background-color: #f8f9fa; height: 400px; border-radius: 10px;">
+                        <div class="text-muted bot-message">Hi! How can I help you?</div>
+                      </div>
+                      <div class="input-group">
+                        <input class="form-control" id="chat-message-input" type="text" placeholder="Type your message here..." aria-label="Type your message here">
+                        <button class="btn btn-primary" type="button" id="chat-message-submit">Send</button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            {{room_id | json_script:"room-id"}}
+            <script>
+              const roomName = JSON.parse(document.getElementById("room-id").textContent);
+              console.log(`ws://${window.location.host}/ws/chat/${roomName}/`);
+              const chatSocket = new WebSocket(
+                `ws://${window.location.host}/ws/chat/${roomName}/`
+              );
+            
+              chatSocket.onclose = function (e) {
+                console.error("Chat socket closed unexpectedly");
+              };
+            
+              chatSocket.onmessage = function (e) {
+                const data = JSON.parse(e.data);
+                console.log("Received message:", data);
+            
+                const chatLog = document.querySelector("#chat-log");
+                const messageElement = document.createElement('div');
+            
+                if (typeof data.message === 'string') {
+                    messageElement.textContent = data.message;
+                } else {
+                    messageElement.textContent = JSON.stringify(data.message);
+                }
+            
+                chatLog.appendChild(messageElement);
+            
+                // scroll 'chatLog' to the bottom
+                chatLog.scrollTop = chatLog.scrollHeight;
+            };
+            
+            
+              document.querySelector("#chat-message-input").focus();
+              document.querySelector("#chat-message-input").onkeyup = function (e) {
+                if (e.key === "Enter") {
+                  e.preventDefault();
+                  document.querySelector("#chat-message-submit").click();
+                }
+              };
+            
+              chatSocket.onopen = function (e) {
+                console.log("WebSocket connection opened!");
+                document.querySelector("#chat-message-submit").onclick = function (e) {
+                  e.preventDefault();
+                  const messageInputDom = document.querySelector("#chat-message-input");
+                  const message = messageInputDom.value;
+                  console.log("Sending message:", message);
+                  chatSocket.send(
+                    JSON.stringify({
+                      message: message,
+                    })
+                  );
+                  messageInputDom.value = "";
+                };
+              };
+            </script>
 {% endblock %}
 
             <!-- {% if prev_messages %}

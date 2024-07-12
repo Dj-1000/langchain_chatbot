@@ -8,7 +8,6 @@ openai.api_key = os.environ.get('OPENAI_API_KEY')
 # from langchain import LLMChain, PromptTemplate
 # from langchain.llms import OpenAI
 
-from .hugging_face import query
 
 # Load the summarization pipeline from Hugging Face
 
