@@ -3,7 +3,14 @@ import json
 from channels.db import database_sync_to_async
 from .models import Room,Messages
 from django.db.models import Q
+
 from .openai import get_intent_scores
+import os
+
+import django
+django.setup()
+
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "chatbot.settings")
 
 class ChatRoomConsumer(AsyncWebsocketConsumer):
     async def connect(self):
@@ -33,7 +40,8 @@ class ChatRoomConsumer(AsyncWebsocketConsumer):
     # Receive message from WebSocket
     async def receive(self, text_data):
         text_data_json = json.loads(text_data)
-        message = text_data_json["message"]
+        message = text_data_json.get("message","")
+    
         message = str(message).strip()
 
         if message:
@@ -43,29 +51,37 @@ class ChatRoomConsumer(AsyncWebsocketConsumer):
                 sent_by = self.user
             )
         # Send message to room group
-        print("Sending messages to room: ",message)
+        print("Sending messages to textbox: ",message)
         
         await self.channel_layer.group_send(
             self.room_group_name,
             {
                 "type": "chat_message",
-                "message": message
+                "message": message,
+                "is_bot": False
             })
     
 
     # Receive message from room group
     async def chat_message(self, event):
-        intent_score = ""
         msg = event["message"]
+        print("Recieved input message :",msg)
+    
         if msg:
-            intent_score = await get_intent_scores(msg)
+            await self.send(text_data=json.dumps({
+                "message": msg,
+                "is_bot": False
+            }))
+
+            intent_score = await get_intent_scores(msg,room_name=self.room_name)
 
             
-            print("Recieved from group:",msg)
-            print("INTENT :",str(intent_score))
+            print("Response from chatbot :",intent_score)
+            
         # Send message to WebSocket
         await self.send(text_data=json.dumps({
-            "message": intent_score
+            "message": intent_score,
+            "is_bot":True
         }))
 
 

@@ -1,6 +1,4 @@
 from django.shortcuts import render
-import streamlit as st
-from django.shortcuts import render
 from django.contrib import auth
 from django.db.models import Q
 from django.contrib.auth import authenticate

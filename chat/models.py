@@ -3,9 +3,23 @@ from django.contrib.auth import get_user_model
 import uuid
 User = get_user_model()
 
+
+class Folder(models.Model):
+    name = models.CharField(max_length=255)
+    parent = models.ForeignKey('self', null=True, blank=True, on_delete=models.CASCADE, related_name='subfolders')
+    description = models.CharField(max_length=500,blank=True)
+    def __str__(self) -> str:
+        if self.parent:
+            return self.name + ' / ' + self.parent.name
+        else:
+            return self.name
+        
+
 class Room(models.Model):
     id = models.UUIDField(default=uuid.uuid4, primary_key=True, editable=False, unique=True)
     member = models.ManyToManyField(User, related_name="rooms")
+    category = models.ForeignKey(to=Folder,on_delete=models.DO_NOTHING,related_name='sessions',null=True)
+    is_matched = models.BooleanField(default=False)
 
     def __str__(self) -> str:
         return str(self.id)
@@ -23,7 +37,6 @@ class Room(models.Model):
         self.save()
 
 
-
 class Messages(models.Model):
     room = models.ForeignKey(Room, related_name='messages',on_delete=models.CASCADE,null=True)
     content = models.CharField(max_length=200)
@@ -33,15 +46,6 @@ class Messages(models.Model):
     def __str__(self) -> str:
         return self.content
 
-class Folder(models.Model):
-    name = models.CharField(max_length=255)
-    parent = models.ForeignKey('self', null=True, blank=True, on_delete=models.CASCADE, related_name='subfolders')
-    description = models.CharField(max_length=500,blank=True)
-    def __str__(self) -> str:
-        if self.parent:
-            return self.name + ' / ' + self.parent.name
-        else:
-            return self.name
 
 class File(models.Model):
     name = models.CharField(max_length=255)
@@ -56,3 +60,9 @@ class File(models.Model):
             return self.name + ' / ' + self.folder.name
         else:
             return self.name
+        
+
+
+
+
+    

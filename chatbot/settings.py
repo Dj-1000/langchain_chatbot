@@ -25,8 +25,8 @@ LOGIN_URL = 'login'
 
 INSTALLED_APPS = [
     ## for chat
-    "daphne",
-
+    "daphne",    
+    "channels",
     ## default
     "django.contrib.admin",
     "django.contrib.auth",
@@ -37,7 +37,6 @@ INSTALLED_APPS = [
 
 
     ## third party libraries
-    "channels",
     'crispy_forms',
     'crispy_bootstrap4',
 
@@ -79,7 +78,8 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = "chatbot.wsgi.application"
-ASGI_APPLICATION = 'chatbot.asgi.application'
+ASGI_APPLICATION = "chatbot.asgi.application"
+
 
 
 # Database

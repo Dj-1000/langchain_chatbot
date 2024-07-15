@@ -1,161 +1,162 @@
 {% extends 'base.html' %} {% block title %}Chat with bot | ProCare{% endblock %}
 {% block content %}
-
-<!-- <div id="user-hello" class="text-dark">
-  <p>Welcome {{user}}</p>
- </div> -->
-<hr />
-
-{% comment %} 
-<div class="container ">
+<div class="container mt-5">
   <div class="row d-flex justify-content-center">
-    <div class="col-6">
-      <form>
-        <div class="form-group">
-          <h4>ProCare Chatbot</h4>
-          
-          <textarea class="form-control" id="chat-log" readonly rows="5">Hi! How can I help you?
-          </textarea><br>
-          <input class="form-control" id="chat-message-input" type="text"><br>
-          <button style="width: 20%;display: block;margin:0 auto;" class="btn btn-primary" type="submit" id="chat-message-submit">Send</button>
+    <div class="col-12 col-lg-8">
+      <div class="card shadow-sm">
+        <div class="card-header bg-primary text-white pt-4 pb-4 text-center">
+          <h4 class="mb-0">ProCare Chatbot</h4>
         </div>
-      </form>
-    </div>
-  </div>
-</div>
-<!-- <script type="text/javascript">!function(t,e){t.artibotApi={l:[],t:[],on:function(){this.l.push(arguments)},trigger:function(){this.t.push(arguments)}};var a=!1,i=e.createElement("script");i.async=!0,i.type="text/javascript",i.src="https://app.artibot.ai/loader.js",e.getElementsByTagName("head").item(0).appendChild(i),i.onreadystatechange=i.onload=function(){if(!(a||this.readyState&&"loaded"!=this.readyState&&"complete"!=this.readyState)){new window.ArtiBot({i:"619ba0cf-4d35-451b-a529-9a58f32e49c6"});a=!0}}}(window,document);</script> -->
-
-{{room_id | json_script:"room-id"}}
-<script>
-  const roomName = JSON.parse(document.getElementById("room-id").textContent);
-
-  const chatSocket = new WebSocket(
-    "ws://" + window.location.host + "/ws/chat/" + roomName + "/"
-  );
-
-  chatSocket.onclose = function (e) {
-    console.error("Chat socket closed unexpectedly");
-  };
-
-  chatSocket.onmessage = function (e) {
-    const data = JSON.parse(e.data);
-    console.log("Received message:", data);
-
-    const chatLog = document.querySelector("#chat-log");
-    chatLog.value += JSON.stringify(data.message) + "\n";
-    // scroll 'chatLog' to the bottom
-    chatLog.scrollTop = chatLog.scrollHeight;
-  };
-
-  document.querySelector("#chat-message-input").focus();
-  document.querySelector("#chat-message-input").onkeyup = function (e) {
-    if (e.key === "Enter") {
-      e.preventDefault();
-      document.querySelector("#chat-message-submit").click();
-    }
-  };
-
-  chatSocket.onopen = function (e) {
-    console.log("WebSocket connection opened!");
-    document.querySelector("#chat-message-submit").onclick = function (e) {
-      e.preventDefault();
-      const messageInputDom = document.querySelector("#chat-message-input");
-      const message = messageInputDom.value;
-      console.log("Sending message:", message);
-      chatSocket.send(
-        JSON.stringify({
-          message: message,
-        })
-      );
-      messageInputDom.value = "";
-    };
-  };
-</script>  {% endcomment %}
-
-
-{% comment %} {% block content %} {% endcomment %}
-            
-            <div class="container mt-5">
-              <div class="row d-flex justify-content-center">
-                <div class="col-12 col-lg-8">
-                  <div class="card shadow-sm">
-                    <div class="card-header bg-primary text-white pt-4 pb-4 text-center">
-                      <h4 class="mb-0">ProCare Chatbot</h4>
-                    </div>
-                    <div class="card-body mt-3">
-                      <div id="chat-log" class="border p-3 mb-5" style="height: 300px; overflow-y: scroll; background-color: #f8f9fa; height: 400px; border-radius: 10px;">
-                        <div class="text-muted bot-message">Hi! How can I help you?</div>
-                      </div>
-                      <div class="input-group">
-                        <input class="form-control" id="chat-message-input" type="text" placeholder="Type your message here..." aria-label="Type your message here">
-                        <button class="btn btn-primary" type="button" id="chat-message-submit">Send</button>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
+        <div
+          id="chat-log"
+          class="card-body mt-3 border p-3 mb-5"
+          style="
+            height: 300px;
+            overflow-y: scroll;
+            background-color: #f8f8f8;
+            height: 400px;
+            border-radius: 10px;
+            clear: both;
+          "
+        >
+          <div class="bot-container">
+            <div class="bot-icon">
+              <i class="fa-solid fa-robot fa-lg"></i>
             </div>
-            
-            {{room_id | json_script:"room-id"}}
-            <script>
-              const roomName = JSON.parse(document.getElementById("room-id").textContent);
-              console.log(`ws://${window.location.host}/ws/chat/${roomName}/`);
-              const chatSocket = new WebSocket(
-                `ws://${window.location.host}/ws/chat/${roomName}/`
-              );
-            
-              chatSocket.onclose = function (e) {
-                console.error("Chat socket closed unexpectedly");
-              };
-            
-              chatSocket.onmessage = function (e) {
-                const data = JSON.parse(e.data);
-                console.log("Received message:", data);
-            
-                const chatLog = document.querySelector("#chat-log");
-                const messageElement = document.createElement('div');
-            
-                if (typeof data.message === 'string') {
-                    messageElement.textContent = data.message;
-                } else {
-                    messageElement.textContent = JSON.stringify(data.message);
-                }
-            
-                chatLog.appendChild(messageElement);
-            
-                // scroll 'chatLog' to the bottom
-                chatLog.scrollTop = chatLog.scrollHeight;
-            };
-            
-            
-              document.querySelector("#chat-message-input").focus();
-              document.querySelector("#chat-message-input").onkeyup = function (e) {
-                if (e.key === "Enter") {
-                  e.preventDefault();
-                  document.querySelector("#chat-message-submit").click();
-                }
-              };
-            
-              chatSocket.onopen = function (e) {
-                console.log("WebSocket connection opened!");
-                document.querySelector("#chat-message-submit").onclick = function (e) {
-                  e.preventDefault();
-                  const messageInputDom = document.querySelector("#chat-message-input");
-                  const message = messageInputDom.value;
-                  console.log("Sending message:", message);
-                  chatSocket.send(
-                    JSON.stringify({
-                      message: message,
-                    })
-                  );
-                  messageInputDom.value = "";
-                };
-              };
-            </script>
-{% endblock %}
+            <div class="message bot-msg">How can I help you?</div>
+          </div>
+<!-- 
 
-            <!-- {% if prev_messages %}
+          <div class="bot-container">
+            <div class="bot-icon">
+              <i class="fa-solid fa-robot fa-lg"></i>
+            </div>
+            <div class="message bot-msg">
+              {"Pro Care":0.7,"Case Study Creation - Internal use / Pro
+              Care":0.2,"Competitive Landscape / Pro Care":0.3,"Deal Documents /
+              Pro Care":0.5,"Decision Making / Pro Care":0.4,"Financials / Pro
+              Care":1,"Legal & IP / Pro Care":0.1,"Market Research / Pro
+              Care":0.3,"Product / Pro Care":0.1,"Strategy / Pro Care":0.2,"Team
+              / Pro Care":0.1,"Design elements - logos, templates / Case Study
+              Creation - Internal use":0.2,"Aged Care - Top 3 / Market
+              Research":0.1,"Health Care AI - Top 3 / Market
+              Research":0.1,"Healthcare AI / Market Research":0.1,"Aged Care
+              Industry / Market Research":0.1}
+            </div>
+          </div> -->
+
+
+        </div>
+        <div class="input-group">
+          <input
+            class="form-control"
+            id="chat-message-input"
+            type="text"
+            placeholder="Type your message here..."
+            aria-label="Type your message here"
+          />
+          <button
+            class="btn btn-primary"
+            type="button"
+            id="chat-message-submit"
+          >
+            Send
+          </button>
+        </div>
+      </div>
+    </div>
+
+    {{room_id | json_script:"room-id"}}
+    <script>
+      const roomName = JSON.parse(
+        document.getElementById("room-id").textContent
+      );
+      console.log(`ws://${window.location.host}/ws/chat/${roomName}/`);
+      const chatSocket = new WebSocket(
+        `ws://${window.location.host}/ws/chat/${roomName}/`
+      );
+
+      chatSocket.onclose = function (e) {
+        console.error("Chat socket closed unexpectedly");
+      };
+
+      chatSocket.onmessage = function (e) {
+        const data = JSON.parse(e.data);
+        console.log(data)
+        const chatLog = document.querySelector("#chat-log");
+
+        if (data.is_bot == false) {
+          console.log("Received user message from user:", data);
+
+          // Create the outer bot-container div
+          const userMsgDiv = document.createElement("div");
+          userMsgDiv.className = "message user-msg";
+          userMsgDiv.textContent = data.message;
+          chatLog.appendChild(userMsgDiv);
+
+        } else {
+          console.log("Received response from chatbot:", data);
+
+          // Create the outer bot-container div
+          const botContainerDiv = document.createElement("div");
+          botContainerDiv.className = "bot-container";
+
+          // Create the bot-icon div
+          const botIconDiv = document.createElement("div");
+          botIconDiv.className = "bot-icon";
+
+          // Create the icon element
+          const iconElement = document.createElement("i");
+          iconElement.className = "fa-solid fa-robot fa-lg";
+          botIconDiv.appendChild(iconElement);
+
+          // Create the bot-msg div
+          const botMsgDiv = document.createElement("div");
+          botMsgDiv.className = "message bot-msg";
+          botMsgDiv.textContent = JSON.stringify(data.message);
+
+          // Append the bot-icon and bot-msg divs to the bot-container div
+          botContainerDiv.appendChild(botIconDiv);
+          botContainerDiv.appendChild(botMsgDiv);
+
+          // Append the bot-container div to the chat log
+          chatLog.appendChild(botContainerDiv);
+        }
+
+        // Scroll 'chatLog' to the bottom
+        chatLog.scrollTop = chatLog.scrollHeight;
+      };
+
+      document.querySelector("#chat-message-input").focus();
+      document.querySelector("#chat-message-input").onkeyup = function (e) {
+        if (e.key === "Enter") {
+          e.preventDefault();
+          document.querySelector("#chat-message-submit").click();
+        }
+      };
+
+      chatSocket.onopen = function (e) {
+        console.log("WebSocket connection opened!");
+        document.querySelector("#chat-message-submit").onclick = function (e) {
+          e.preventDefault();
+          const messageInputDom = document.querySelector("#chat-message-input");
+          const message = messageInputDom.value;
+          console.log("Sending message :", message);
+          chatSocket.send(
+            JSON.stringify({
+              message: message,
+            })
+          );
+          messageInputDom.value = "";
+        };
+      };
+    </script>
+    {% endblock %}
+
+    <!-- {% if prev_messages %}
             {% for message in prev_messages %}
             {{ message.sent_by }} - {{ message.content }}
             {% endfor %}
             {% endif %} -->
+  </div>
+</div>
