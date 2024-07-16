@@ -8,6 +8,7 @@ from django.shortcuts import render,redirect
 from .forms import CreateUserForm,LoginForm
 from django.urls import reverse
 from django.contrib import messages
+from chat.models import Room
 
 User = get_user_model()
 
@@ -40,7 +41,10 @@ def login(request):
                 # request.session['user_id'] = user.id  # Store the user id in session
         
                 auth.login(request, user)
-                return redirect(reverse('chat_view', kwargs={'room_id' : '47a5ced7-0265-45fe-8bfa-14af6f7d8b3d'}))
+                room = Room()
+                room.save()
+                return redirect(reverse('chat_view',kwargs={"room_id" : room.id}))
+
             else:
                 messages.error(request, 'Invalid username or password')
                         

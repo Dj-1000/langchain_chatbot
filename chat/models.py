@@ -18,7 +18,7 @@ class Folder(models.Model):
 class Room(models.Model):
     id = models.UUIDField(default=uuid.uuid4, primary_key=True, editable=False, unique=True)
     member = models.ManyToManyField(User, related_name="rooms")
-    category = models.ForeignKey(to=Folder,on_delete=models.DO_NOTHING,related_name='sessions',null=True)
+    category = models.ForeignKey(to=Folder,on_delete=models.DO_NOTHING,related_name='sessions',default=None)
     is_matched = models.BooleanField(default=False)
 
     def __str__(self) -> str:

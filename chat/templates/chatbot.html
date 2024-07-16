@@ -5,7 +5,7 @@
     <div class="col-12 col-lg-8">
       <div class="card shadow-sm">
         <div class="card-header bg-primary text-white pt-4 pb-4 text-center">
-          <h4 class="mb-0">ProCare Chatbot</h4>
+          <h4 class="mb-0">Casey - your case study assistant</h4>
         </div>
         <div
           id="chat-log"
@@ -114,7 +114,23 @@
           const botMsgDiv = document.createElement("div");
           botMsgDiv.className = "message bot-msg";
           botMsgDiv.textContent = JSON.stringify(data.message);
+          
+          if(data.file_object){
+            const hostUrl = `${window.location.protocol}//${window.location.host}`;
+            // Assuming data.file contains the relative file path
+            const fileUrl = `${hostUrl}${data.file_object}`;
 
+            // Create anchor tag
+            const anchorTag = document.createElement("a");
+            anchorTag.href = fileUrl;
+            anchorTag.textContent = "Download File";
+
+            // Create div for the anchor tag
+            const fileDiv = document.createElement("div");
+            fileDiv.appendChild(anchorTag);
+
+            botMsgDiv.appendChild(fileDiv);
+          }
           // Append the bot-icon and bot-msg divs to the bot-container div
           botContainerDiv.appendChild(botIconDiv);
           botContainerDiv.appendChild(botMsgDiv);

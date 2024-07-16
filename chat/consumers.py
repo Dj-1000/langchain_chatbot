@@ -20,10 +20,10 @@ class ChatRoomConsumer(AsyncWebsocketConsumer):
 
         self.user = self.scope['user']
         self.room = await database_sync_to_async(Room.objects.get)(id=self.room_name)
-        self.other_user = await self.get_other_user(room=self.room)
+        # self.other_user = await self.get_other_user(room=self.room)
 
-        if self.other_user:
-            print(f"User 1 :{self.user} Other User : {self.other_user}")
+        # if self.other_user:
+        #     print(f"User 1 :{self.user} Other User : {self.other_user}")
 
         if not self.user.is_authenticated:
             print("User is anonymous")
@@ -66,6 +66,7 @@ class ChatRoomConsumer(AsyncWebsocketConsumer):
     async def chat_message(self, event):
         msg = event["message"]
         print("Recieved input message :",msg)
+        host_url = self.scope['headers'][0][1].decode()
     
         if msg:
             await self.send(text_data=json.dumps({
@@ -73,20 +74,27 @@ class ChatRoomConsumer(AsyncWebsocketConsumer):
                 "is_bot": False
             }))
 
-            intent_score = await get_intent_scores(msg,room_name=self.room_name)
+            intent_score = await get_intent_scores(msg,room_name=self.room_name, host_url=host_url)
 
             
             print("Response from chatbot :",intent_score)
             
         # Send message to WebSocket
+        if isinstance(intent_score, dict):
+            file_object = intent_score.get("file_url")
+            intent_score = intent_score.get('message')
+        else:
+            file_object = None
+
         await self.send(text_data=json.dumps({
             "message": intent_score,
+            "file_object": file_object,
             "is_bot":True
         }))
 
 
 
-    @database_sync_to_async
-    def get_other_user(self,room):
-        return list(room.member.all().exclude(id = self.user.id))[0]
+    # @database_sync_to_async
+    # def get_other_user(self,room):
+    #     return list(room.member.all().exclude(id = self.user.id))[0]
         
