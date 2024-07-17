@@ -25,27 +25,6 @@
             </div>
             <div class="message bot-msg">How can I help you?</div>
           </div>
-<!-- 
-
-          <div class="bot-container">
-            <div class="bot-icon">
-              <i class="fa-solid fa-robot fa-lg"></i>
-            </div>
-            <div class="message bot-msg">
-              {"Pro Care":0.7,"Case Study Creation - Internal use / Pro
-              Care":0.2,"Competitive Landscape / Pro Care":0.3,"Deal Documents /
-              Pro Care":0.5,"Decision Making / Pro Care":0.4,"Financials / Pro
-              Care":1,"Legal & IP / Pro Care":0.1,"Market Research / Pro
-              Care":0.3,"Product / Pro Care":0.1,"Strategy / Pro Care":0.2,"Team
-              / Pro Care":0.1,"Design elements - logos, templates / Case Study
-              Creation - Internal use":0.2,"Aged Care - Top 3 / Market
-              Research":0.1,"Health Care AI - Top 3 / Market
-              Research":0.1,"Healthcare AI / Market Research":0.1,"Aged Care
-              Industry / Market Research":0.1}
-            </div>
-          </div> -->
-
-
         </div>
         <div class="input-group">
           <input
@@ -113,7 +92,7 @@
           // Create the bot-msg div
           const botMsgDiv = document.createElement("div");
           botMsgDiv.className = "message bot-msg";
-          botMsgDiv.textContent = JSON.stringify(data.message);
+          botMsgDiv.textContent = data.message;
           
           if(data.file_object){
             const hostUrl = `${window.location.protocol}//${window.location.host}`;
@@ -123,7 +102,7 @@
             // Create anchor tag
             const anchorTag = document.createElement("a");
             anchorTag.href = fileUrl;
-            anchorTag.textContent = "Download File";
+            anchorTag.textContent = data.file_name;
 
             // Create div for the anchor tag
             const fileDiv = document.createElement("div");

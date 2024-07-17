@@ -25,7 +25,7 @@ def room_session_update(room_name,category=None,is_matched=False):
     if is_matched and session:
         session.category = Folder.objects.filter(id=category).first()
         session.is_matched=True
-        
+     
     else:
        session.is_matched = False
        session.category = None
@@ -50,5 +50,32 @@ def get_current_room(room_name):
 @sync_to_async
 def get_file_objects(id):
     obj = File.objects.filter(id=id).first()
-    return obj
+    if obj:
+        return obj
+    return None
 
+@sync_to_async
+def get_db_data():
+    data = []
+    folders = Folder.objects.all()
+    for folder_index, folder in enumerate(folders):
+        folder_data = {
+            'folder_id': folder.id,
+            'folder_name': folder.name,
+            'description': folder.description,
+            'parent': folder.parent.name if folder.parent else None,
+            'files': []
+        }
+        
+        files = File.objects.filter(folder=folder)
+        for file_index, file in enumerate(files):
+            folder_data['files'].append({
+                'file_id': file.id,
+                'file_name': file.name,
+                'description': file.description,
+                'file_url': file.file.url,
+            })
+        
+        data.append(folder_data)
+        
+    return data

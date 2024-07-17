@@ -4,7 +4,7 @@ from channels.db import database_sync_to_async
 from .models import Room,Messages
 from django.db.models import Q
 
-from .openai import get_intent_scores
+from chat.openai import get_intent_scores,bot_conversation
 import os
 
 import django
@@ -74,7 +74,7 @@ class ChatRoomConsumer(AsyncWebsocketConsumer):
                 "is_bot": False
             }))
 
-            intent_score = await get_intent_scores(msg,room_name=self.room_name, host_url=host_url)
+            intent_score = await bot_conversation(user_query=msg,room_name=self.room_name)
 
             
             print("Response from chatbot :",intent_score)
@@ -82,14 +82,17 @@ class ChatRoomConsumer(AsyncWebsocketConsumer):
         # Send message to WebSocket
         if isinstance(intent_score, dict):
             file_object = intent_score.get("file_url")
+            file_name = intent_score.get("file_name")
             intent_score = intent_score.get('message')
         else:
             file_object = None
+            file_name = None
 
         await self.send(text_data=json.dumps({
             "message": intent_score,
             "file_object": file_object,
-            "is_bot":True
+            "is_bot":True,
+            "file_name": file_name
         }))
 
 
