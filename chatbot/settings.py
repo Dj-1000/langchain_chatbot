@@ -17,7 +17,7 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 SECRET_KEY = "django-insecure-26^z8m@@eifbtrl-$3ufx5=@_q!d5knd5m-2cak28q(r-st$^c"
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 ALLOWED_HOSTS = ["*"]
 LOGIN_REDIRECT_URL ='chat_view'
@@ -98,17 +98,24 @@ ASGI_APPLICATION = "chatbot.asgi.application"
 
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
-
-DATABASES = {
+if DEBUG:
+    DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'procare',
-        'USER': 'root',
-        'PASSWORD': 'root123@ROOT',
-        'HOST': 'localhost',
-        'PORT': '5432',
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
     }
-}
+    }   
+else:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql_psycopg2',
+            'NAME': 'procare',
+            'USER': 'root',
+            'PASSWORD': 'root123@ROOT',
+            'HOST': 'localhost',
+            'PORT': '5432',
+        }
+    }
 
 AUTH_USER_MODEL = 'accounts.ChatUser'
 
