@@ -38,8 +38,6 @@ def login(request):
             user = authenticate(request, username=email, password=password)
             print("USER : ", user)
             if user is not None:
-                # request.session['user_id'] = user.id  # Store the user id in session
-        
                 auth.login(request, user)
                 room = Room()
                 room.save()

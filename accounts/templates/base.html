@@ -9,18 +9,22 @@
       href="https://bootswatch.com/5/litera/bootstrap.min.css"
     />
     <style>
-        .message{
-    	width:calc(100% - 100px);
-    	border-radius:10px;
-    	padding:6px;
-        margin-left: 1em;
-        }
-        .bot-container {
+      .message{
+        width:calc(100% - 100px);
+        border-radius:10px;
+        padding:10px 15px;;
+        width: fit-content;
+        max-width: 70%;
+        min-width: 15%;
+      }
+      .msg-container {
         display: flex; 
-        text-align: justify
-        }
+        text-align: justify;
+        margin: 1em 0em;
+        align-items: end;
+      }
       .bot-icon{ 
-	    background-size:cover;
+	      background-size:cover;
         position:relative;  
         padding: 6px;
         border-radius: 100%;
@@ -33,24 +37,32 @@
         color: rgb(51, 49, 49);
         justify-content: center;
         background: #b8b4b453;
+        margin-left: .5em;
       }
       .user-msg {
-       	background:lightblue;
-    	margin:2em 0;
-    	margin-left:100px;
-    	color:white;
-    	text-align:right;
+        background:lightblue;
+        margin-left:100px;
+        color: #000;
+        text-align:right;
+        margin-right: .5em;
       }
-      .icon{
-	    --size:40px;
-	    width:var(--size);
-	    height:var(--size);
-	    background-position:center;
-	    background-size:cover;
-	    border-radius:100%;
-	    margin-right:.8em;
-	    position:relative;
-    }
+      .user-icon{
+        background-size:cover;
+        position:relative;  
+        padding: 6px;
+        border-radius: 50%;
+        justify-content: center;
+        background-color: #e7f0f1dd;
+        background-position:center;
+        height: fit-content;
+      }
+
+      .chat-input{
+        width: 95%;
+        margin: auto;
+        margin-bottom: 20px;
+      }
+      
     </style>
     <!-- bootswatch CSS -->
     <script

@@ -2,6 +2,7 @@ from pathlib import Path
 import os 
 from dotenv import load_dotenv,find_dotenv
 load_dotenv(find_dotenv())
+from corsheaders.defaults import default_headers
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -17,7 +18,7 @@ SECRET_KEY = "django-insecure-26^z8m@@eifbtrl-$3ufx5=@_q!d5knd5m-2cak28q(r-st$^c
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["*"]
 LOGIN_REDIRECT_URL ='chat_view'
 LOGIN_URL = 'login'
 
@@ -27,6 +28,7 @@ INSTALLED_APPS = [
     ## for chat
     "daphne",    
     "channels",
+
     ## default
     "django.contrib.admin",
     "django.contrib.auth",
@@ -39,17 +41,28 @@ INSTALLED_APPS = [
     ## third party libraries
     'crispy_forms',
     'crispy_bootstrap4',
+    'corsheaders',
 
     ## system apps
     "accounts",
     "chat"
 ]
-
+CORS_ALLOWED_ORIGINS = [
+    "https://b0f0-122-176-163-135.ngrok-free.app",
+    "http://localhost:8080",
+    "http://127.0.0.1:8000",
+]
+CSRF_TRUSTED_ORIGINS=[
+    "https://b0f0-122-176-163-135.ngrok-free.app",
+    "http://localhost:8080",
+    "http://127.0.0.1:8000",
+]
 
 CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap4"
 CRISPY_TEMPLATE_PACK = 'bootstrap4'
 
 MIDDLEWARE = [
+    "corsheaders.middleware.CorsMiddleware",
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",

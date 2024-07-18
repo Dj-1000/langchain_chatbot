@@ -1,4 +1,5 @@
 from .models import Folder, File, Room
+from accounts.models import ChatUser
 from asgiref.sync import sync_to_async
 import json
 
@@ -55,6 +56,11 @@ def get_file_objects(id):
     return None
 
 @sync_to_async
+def get_bot_user():
+    bot = ChatUser.objects.filter(email = 'bot@procare.com').first()
+    return bot
+
+@sync_to_async
 def get_db_data():
     data = []
     folders = Folder.objects.all()
@@ -79,3 +85,4 @@ def get_db_data():
         data.append(folder_data)
         
     return data
+

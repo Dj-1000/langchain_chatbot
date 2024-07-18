@@ -18,7 +18,7 @@ class Folder(models.Model):
 class Room(models.Model):
     id = models.UUIDField(default=uuid.uuid4, primary_key=True, editable=False, unique=True)
     member = models.ManyToManyField(User, related_name="rooms")
-    category = models.ForeignKey(to=Folder,on_delete=models.DO_NOTHING,related_name='sessions',default=None)
+    category = models.ForeignKey(to=Folder, on_delete=models.CASCADE, related_name='sessions', null=True, default=None)
     is_matched = models.BooleanField(default=False)
 
     def __str__(self) -> str:
@@ -40,6 +40,7 @@ class Room(models.Model):
 class Messages(models.Model):
     room = models.ForeignKey(Room, related_name='messages',on_delete=models.CASCADE,null=True)
     content = models.CharField(max_length=200)
+    is_bot = models.BooleanField(default=False)
     sent_by = models.ForeignKey(User, related_name="messages_sent", on_delete=models.DO_NOTHING)
     created_at = models.DateTimeField(auto_now_add=True)
 

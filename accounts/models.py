@@ -15,12 +15,6 @@ class ChatUser(AbstractUser):
 
     def __str__(self) -> str:
         return self.email
-    
-
-class Messages(models.Model):
-    content = models.TextField(max_length=200)
-    sent_by = models.ForeignKey(ChatUser,on_delete=models.DO_NOTHING)
-    sent_at = models.DateTimeField(auto_now_add=True)
 
 
 

@@ -81,7 +81,7 @@ def dict_to_message(message_dict):
 
 def save_memory(memory_key, memory_buffer):
     messages = [message_to_dict(msg) for msg in memory_buffer.chat_memory.messages]
-    with open(f"{memory_key}_memory.json", "w") as f:
+    with open(f"buffer/{memory_key}_memory.json", "w") as f:
         json.dump(messages, f)
 
 def fetch_data_from_db():
@@ -91,7 +91,7 @@ def fetch_data_from_db():
 def load_memory(memory_key):
     memory = ConversationBufferMemory(memory_key=memory_key, input_key='user_query')
     try:
-        with open(f"{memory_key}_memory.json", "r") as f:
+        with open(f"buffer/{memory_key}_memory.json", "r") as f:
             buffer = json.load(f)
             for message_dict in buffer:
                 message = dict_to_message(message_dict)
@@ -203,22 +203,6 @@ async def bot_conversation(user_query,room_name):
         
         # Fetch the result from the future
         result = future.result()
-
-    # if result['is_match']:
-    #     if result['category'] == room.category_id:
-    #         await room_session_update(room_name = room_name,category=result['category'],is_matched=True)
-    #         return result['message']
-
-    #     else:
-    #         id = result['file_id']
-    #         file = await get_file_objects(id)
-    #         # message  = result['message']
-    #         result['file_url'] = file.file.url if file else None
-    #         return result
-    
-    # else:
-    #     await room_session_update(room_name = room_name,is_matched=False,)
-    #     return result
 
     if result['is_match']:
         if result['file_name']:

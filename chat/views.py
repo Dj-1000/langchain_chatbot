@@ -4,9 +4,9 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import login_required
 from .models import Room
 from django.db.models import Q
-from .models import Messages,File,Folder
+from .models import File,Folder,Messages
 from .forms import FileForm
-
+from django.contrib.auth.decorators import login_required
 
 User = get_user_model()
 
@@ -35,8 +35,11 @@ def room(request,other_user_id):
             room.member.add(user,other_user)
             return redirect(reverse('chat_view',kwargs={"room_id" : room.id}))
 
+
+@login_required
 def chat_view(request,room_id):
-    prev_messages = Messages.objects.filter(room__id = room_id).order_by('-created_at')
+    prev_messages = Messages.objects.filter(room__id = room_id)
+
     context = {
         'room_id': room_id,
         'prev_messages' : prev_messages
