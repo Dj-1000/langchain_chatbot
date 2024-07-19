@@ -163,8 +163,11 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 CHANNEL_LAYERS = {
     "default": {
-        "BACKEND": "channels.layers.InMemoryChannelLayer",
-    }
+        "BACKEND": "channels_redis.core.RedisChannelLayer",
+        "CONFIG": {
+            "hosts": [("170.64.206.255/", 6379)],
+        },
+    },
 }
 
 SESSION_ENGINE = "django.contrib.sessions.backends.db"
