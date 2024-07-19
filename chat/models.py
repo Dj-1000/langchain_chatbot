@@ -8,6 +8,7 @@ class Folder(models.Model):
     name = models.CharField(max_length=255)
     parent = models.ForeignKey('self', null=True, blank=True, on_delete=models.CASCADE, related_name='subfolders')
     description = models.CharField(max_length=500,blank=True)
+
     def __str__(self) -> str:
         if self.parent:
             return self.name + ' / ' + self.parent.name
@@ -23,6 +24,7 @@ class Room(models.Model):
     is_matched = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True,null = True)
     owner = models.ForeignKey(User, related_name='owner_of',on_delete=models.CASCADE,null = True,default = None)
+
 
     def __str__(self) -> str:
         return str(self.id)
