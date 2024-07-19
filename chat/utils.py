@@ -3,6 +3,7 @@ from accounts.models import ChatUser
 from asgiref.sync import sync_to_async
 import json
 
+
 @sync_to_async
 def get_folder_objects(id=None):
     folders_with_files = Folder.objects.prefetch_related('files').all()

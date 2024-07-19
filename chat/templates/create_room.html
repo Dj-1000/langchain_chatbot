@@ -1,0 +1,12 @@
+{% extends 'base.html' %} {% load crispy_forms_tags %} 
+{% block title %}CreateChat | ProCare {% endblock %} 
+{% block content %}
+<div class="container mt-5 p-4">
+  <p>What name would you like to have for the chat room?</p>
+  <br>
+  <form method="post">
+    {% csrf_token %} {{form | crispy}}
+    <button class="btn btn-primary button-link" type="submit">Submit</button>
+  </form>
+</div>
+{% endblock %}

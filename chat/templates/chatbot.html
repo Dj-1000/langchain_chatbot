@@ -1,9 +1,13 @@
 {% extends 'base.html' %} {% block title %}Chat with bot | ProCare{% endblock %}
 {% block content %}
+
 <div class="container mt-5">
   <div class="row d-flex justify-content-center">
-    <div class="col-12 col-lg-8">
-      <div class="card shadow-sm">
+    <div class="col-12 col-lg-8" style="text-align: end;">
+      <div class="start_button">
+        <a class="btn btn-primary button-link" href="{% url 'create_room' %}">Start new chat</a>
+    </div>
+      <div class="card shadow-sm mt-2">
         <div class="card-header bg-primary text-white pt-4 pb-4 text-center">
           <h4 class="mb-0">Casey - your case study assistant</h4>
         </div>

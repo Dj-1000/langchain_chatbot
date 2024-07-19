@@ -17,9 +17,12 @@ class Folder(models.Model):
 
 class Room(models.Model):
     id = models.UUIDField(default=uuid.uuid4, primary_key=True, editable=False, unique=True)
+    name = models.CharField(max_length=200,default=None)
     member = models.ManyToManyField(User, related_name="rooms")
     category = models.ForeignKey(to=Folder, on_delete=models.CASCADE, related_name='sessions', null=True, default=None)
     is_matched = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True,null = True)
+    owner = models.ForeignKey(User, related_name='owner_of',on_delete=models.CASCADE,null = True,default = None)
 
     def __str__(self) -> str:
         return str(self.id)

@@ -39,9 +39,7 @@ def login(request):
             print("USER : ", user)
             if user is not None:
                 auth.login(request, user)
-                room = Room()
-                room.save()
-                return redirect(reverse('chat_view',kwargs={"room_id" : room.id}))
+                return redirect('dashboard')
 
             else:
                 messages.error(request, 'Invalid username or password')
@@ -56,13 +54,13 @@ def logout(request):
 @login_required
 def dashboard(request):
     user = User.objects.get(id = request.user.id)
-    if user:
-        print("User :",user)
-        users = User.objects.exclude(username = user)
-        return render(request,'dashboard.html',{'users':users})
+    rooms_with_user = Room.objects.filter(Q(member=user) | Q(owner = user)).all()
+    print(rooms_with_user)
+    return render(request,'dashboard.html',{'rooms_with_user':rooms_with_user})
     
 
 
+    
 
 
 

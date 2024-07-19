@@ -4,26 +4,38 @@
 {% block title %}Dashboard | Pro Care{% endblock %}
 
 {% block content %}
-<table class="table table-hover ">
-    <thead class="table-light">
-        <tr class="table-active">
-            <th scope="col">ID</th>
-            <th scope="col">Username</th>
-            <th scope="col">Email</th>
-            <th scope="col">Chat</th>
-        </tr>
-    </thead>
+<section class="container mt-5">
 
-    {% for user in users %}
-    <tbody>
-        <tr class="table-active">
-            <th scope="row">{{user.id}}</th>
-            <td>{{user.username}}</td>
-            <td>{{user.email}}</td>
-            <td><a type="submit" href="{% url 'chatroom' user.id %}"><i class="fa-solid fa-message"></i></a></td>
-        </tr>
+<div class="start_button">
+    <a class="btn btn-primary button-link" href="{% url 'create_room' %}">Start new chat</a>
+</div>
 
-    </tbody>
-    {% endfor %}
-</table>
+{% if rooms_with_users is None %}
+<div class="mt-2">
+    <ul class="list-group">
+        <li class="list-group-item list-header text-center">
+            <h4>Your Conversations</h4>
+        </li>
+        {% for room in rooms_with_user %}
+        <a href="{% url 'chat_view' room.id %}" style="text-decoration: none;">
+            <li class="list-group-item">
+                <p class="room-name mb-0"> {{ room.name }} </p>
+                <span class="badge badge-primary badge-pill">{{ room.members.count }}</span>
+            </li>
+        </a>
+        {% endfor %} 
+    </ul>
+</div>
+
+{% else %}
+
+<p>You had no conversations</p>
+<hr>
+<p>Want to start a new conversation?</p>
+<a href="{% url 'create_room' %}"><button class="btn btn-primary">Start a new Chat</button></a>
+
+{% endif %}
+</section>
+  
+
 {% endblock %}

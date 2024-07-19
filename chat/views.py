@@ -5,7 +5,7 @@ from django.contrib.auth.decorators import login_required
 from .models import Room
 from django.db.models import Q
 from .models import File,Folder,Messages
-from .forms import FileForm
+from .forms import FileForm,RoomForm
 from django.contrib.auth.decorators import login_required
 
 User = get_user_model()
@@ -16,33 +16,30 @@ def index(request):
 
 
 @login_required
-def room(request,other_user_id):
-    user_id = request.user.id
-    other_user_id = other_user_id
+def create_room(request):
+    form = RoomForm(data=request.POST)
+    if request.method=='POST':
+        name = request.POST.get('name')
+        user = request.user
+        room = Room()
+        room.owner = user
+        room.name = name
+        room.save()
+        return redirect(reverse('chat_view', kwargs={'room_id': room.id}))
 
-    user = User.objects.filter(id = user_id).first()
-    other_user = User.objects.filter(id = other_user_id).first()
-
-    if user and other_user:
-        rooms_with_user = Room.objects.filter(member=user).filter(member=other_user).first()
-        if rooms_with_user:
-            return redirect(reverse('chat_view',kwargs={"room_id" : rooms_with_user.id}))
-            
-         
-        else:
-            room = Room()
-            room.save()
-            room.member.add(user,other_user)
-            return redirect(reverse('chat_view',kwargs={"room_id" : room.id}))
+    return render(request,'create_room.html',{'form':form})
+        
 
 
 @login_required
 def chat_view(request,room_id):
+    room = Room.objects.filter(id = room_id).first()
     prev_messages = Messages.objects.filter(room__id = room_id)
 
     context = {
         'room_id': room_id,
-        'prev_messages' : prev_messages
+        'prev_messages' : prev_messages,
+        'room_name': room.name
     }
     return render(request,'chatbot.html',context=context)
 
@@ -67,3 +64,4 @@ def upload_file(request):
         form = FileForm()
     return render(request, 'upload_file.html', {'form': form})
     
+
