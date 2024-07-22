@@ -1,0 +1,30 @@
+{% extends 'base.html' %} 
+{% load crispy_forms_tags %} 
+{% block title%}CreateChat | ProCare {% endblock %} 
+{% block content %}
+
+<div class="container mt-5 p-4">
+  <br />
+  <form method="post">
+    {% csrf_token %}
+    <div id="div_id_room mb-2" class="form-group">
+      <label for="id_room" class="requiredField">
+        RoomId<span class="asteriskField">*</span>
+      </label>
+      <div>
+        <input
+          type="text"
+          name="room_id"
+          maxlength="2000"
+          class="textinput form-control is-invalid"
+          id="room_id"
+        />
+      </div>
+    </div>
+    <div >
+      <button class="btn btn-primary button-link mt-2" type="submit">Join</button>
+    </div>
+  </form>
+</div>
+
+{% endblock %}
