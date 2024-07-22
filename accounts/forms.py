@@ -8,6 +8,8 @@ class CreateUserForm(UserCreationForm):
     class Meta:
         model = ChatUser
         fields = ['email','password1','password2']
+    
+    
         
         
 # authenticate the user

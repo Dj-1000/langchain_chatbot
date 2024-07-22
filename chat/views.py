@@ -8,6 +8,7 @@ from .models import File,Folder,Messages
 from .forms import FileForm,RoomForm
 from django.contrib.auth.decorators import login_required
 
+
 User = get_user_model()
 
 
@@ -28,7 +29,19 @@ def create_room(request):
         return redirect(reverse('chat_view', kwargs={'room_id': room.id}))
 
     return render(request,'create_room.html',{'form':form})
-        
+
+
+@login_required
+def join_room(request):
+    if request.method == 'POST':
+        user = request.user
+        room_id = request.POST.get('room_id')
+        room = Room.objects.filter(id = room_id).first()
+        if room:
+            room.join(user)
+            return redirect(reverse('chat_view', kwargs={'room_id': room_id}))
+
+    return render(request, "join_room.html")
 
 
 @login_required

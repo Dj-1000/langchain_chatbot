@@ -1,1 +1,12 @@
-crispy-bootstrap4 daphne django-cors-headers django-crispy-forms Jinja2 langchain langchain-community langchain-core langchain-openai openai python-dotenv requests
+crispy-bootstrap4
+daphne
+django-cors-headers 
+django-crispy-forms 
+Jinja2 
+langchain 
+langchain-community 
+langchain-core 
+langchain-openai 
+openai 
+python-dotenv
+requests

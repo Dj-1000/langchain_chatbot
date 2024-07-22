@@ -1,41 +1,58 @@
-{% extends 'base.html' %}
-
-
-{% block title %}Dashboard | Pro Care{% endblock %}
-
-{% block content %}
+{% extends 'base.html' %} {% block title %}Dashboard | Pro Care{% endblock %}
+{%block content %}
 <section class="container mt-5">
+    <div class="start_button">
+        <a class="btn btn-primary button-link" href="{% url 'create_room' %}">Start new chat</a>
+    </div>
 
-<div class="start_button">
-    <a class="btn btn-primary button-link" href="{% url 'create_room' %}">Start new chat</a>
-</div>
-
-{% if rooms_with_users is None %}
-<div class="mt-2">
-    <ul class="list-group">
-        <li class="list-group-item list-header text-center">
-            <h4>Your Conversations</h4>
-        </li>
-        {% for room in rooms_with_user %}
-        <a href="{% url 'chat_view' room.id %}" style="text-decoration: none;">
-            <li class="list-group-item">
-                <p class="room-name mb-0"> {{ room.name }} </p>
-                <span class="badge badge-primary badge-pill">{{ room.members.count }}</span>
+    {% if rooms_with_users is None %}
+    <div class="mt-2">
+        <ul class="list-group">
+            <li class="list-group-item list-header text-center">
+                <h4>Your Conversations</h4>
             </li>
-        </a>
-        {% endfor %} 
-    </ul>
-</div>
+            {% for room in rooms_with_user %}
 
-{% else %}
+            <li class="list-group-item ">
+                <div class="d-flex justify-content-between align-items-center mb-1">
+                    <div>
+                        <p class="d-inline-flex gap-1 room-name mb-0">
+                            <a data-bs-toggle="collapse" href="#{{ room.id }}" role="button" aria-expanded="false"
+                                aria-controls="{{ room.id }}" style="text-decoration: none;">
+                                {{ room.name }}
+                            </a>
+                        </p>
+                    </div>
+                    <div>
+                        <a href="{% url 'chat_view' room.id %}" class="btn btn-primary" type="button"
+                            style="text-decoration: none">Join</a>
+                        </a>
+                    </div>
+                </div>
+                <div class="collapse w-100" id="{{ room.id }}">
+                    <div class="card card-body p-0">
+                        <ul class="list-group">
+                        {% for member in room.member.all %}
+                        <li class="list-group-item ">{{ member.email }}</li>
+                        {% endfor %}
+                    </ul>
+                    </div>
+                </div>
+            </li>
 
-<p>You had no conversations</p>
-<hr>
-<p>Want to start a new conversation?</p>
-<a href="{% url 'create_room' %}"><button class="btn btn-primary">Start a new Chat</button></a>
+            {% endfor %}
+        </ul>
+    </div>
 
-{% endif %}
+
+    {% else %}
+
+    <p>You had no conversations</p>
+    <hr />
+    <p>Want to start a new conversation?</p>
+    <a href="{% url 'create_room' %}"><button class="btn btn-primary">Start a new Chat</button></a>
+
+    {% endif %}
 </section>
-  
 
 {% endblock %}

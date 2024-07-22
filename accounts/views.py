@@ -17,6 +17,7 @@ def register(request):
     if request.method=='POST':
         form = CreateUserForm(request.POST)
         if form.is_valid():
+
             form.save()
             
             return redirect(reverse('login'))
@@ -55,7 +56,7 @@ def logout(request):
 def dashboard(request):
     user = User.objects.get(id = request.user.id)
     rooms_with_user = Room.objects.filter(Q(member=user) | Q(owner = user)).all()
-    print(rooms_with_user)
+    users = [room.member for room in rooms_with_user.member.all()]
     return render(request,'dashboard.html',{'rooms_with_user':rooms_with_user})
     
 
