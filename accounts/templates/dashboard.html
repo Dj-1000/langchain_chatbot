@@ -1,11 +1,12 @@
 {% extends 'base.html' %} {% block title %}Dashboard | Pro Care{% endblock %}
 {%block content %}
 <section class="container mt-5">
+    {% if rooms_with_user is not None %}
     <div class="start_button">
         <a class="btn btn-primary button-link" href="{% url 'create_room' %}">Start new chat</a>
     </div>
 
-    {% if rooms_with_users is None %}
+   
     <div class="mt-2">
         <ul class="list-group">
             <li class="list-group-item list-header text-center">
@@ -25,15 +26,15 @@
                     </div>
                     <div>
                         <a href="{% url 'chat_view' room.id %}" class="btn btn-primary" type="button"
-                            style="text-decoration: none">Join</a>
+                            style="text-decoration: none">View</a>
                         </a>
                     </div>
                 </div>
                 <div class="collapse w-100" id="{{ room.id }}">
                     <div class="card card-body p-0">
                         <ul class="list-group">
-                        {% for member in room.member.all %}
-                        <li class="list-group-item ">{{ member.email }}</li>
+                        {% for user in room.member.all %}
+                        <li class="list-group-item ">{{ user.email }}</li>
                         {% endfor %}
                     </ul>
                     </div>

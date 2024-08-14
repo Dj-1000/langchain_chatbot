@@ -4,29 +4,21 @@ from channels.db import database_sync_to_async
 from .models import Room,Messages
 from accounts.models import ChatUser
 from django.db.models import Q
-from .utils import get_bot_user
+from .utils import get_user
 from chat.openai import get_intent_scores,bot_conversation
 import os
-
 import django
+
 django.setup()
-
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "chatbot.settings")
-
-
 
 class ChatRoomConsumer(AsyncWebsocketConsumer):
     async def connect(self):
         self.room_name = self.scope["url_route"]["kwargs"]["room_name"]
         self.room_group_name = f"chat_{self.room_name}"
         print("In connect :",self.room_name,self.room_group_name)
-
         self.user = self.scope['user']
         self.room = await database_sync_to_async(Room.objects.get)(id=self.room_name)
-        # self.other_user = await self.get_other_user(room=self.room)
-
-        # if self.other_user:
-        #     print(f"User 1 :{self.user} Other User : {self.other_user}")
 
         if not self.user.is_authenticated:
             print("User is anonymous")
@@ -36,9 +28,6 @@ class ChatRoomConsumer(AsyncWebsocketConsumer):
         await self.channel_layer.group_add(self.room_group_name, self.channel_name)
         await self.accept()
 
-    async def disconnect(self, close_code):
-        # Leave room group
-        await self.channel_layer.group_discard(self.room_group_name, self.channel_name)
 
 
 
@@ -56,11 +45,10 @@ class ChatRoomConsumer(AsyncWebsocketConsumer):
                 sent_by = self.user,
                 is_bot = False
             )
-        # Send message to room group
-        print("Sending messages to textbox: ",message)
 
-        # asyncio.run_in_executor()
-        
+        # Send message to room group
+        print("Sending messages to textbox: ", message)
+        user = await get_user(email = self.user.email)
         await self.channel_layer.group_send(
             self.room_group_name,
             {
@@ -70,82 +58,83 @@ class ChatRoomConsumer(AsyncWebsocketConsumer):
                 "sent_by" : self.user.email
             }
         )
-        
-
-        intent_score = await bot_conversation(user_query=message,room_name=self.room_name)
-        bot = await get_bot_user()
- 
-        print("Response from chatbot :",intent_score)
-
-        # Send message to WebSocket
-        if isinstance(intent_score, dict):
-            file_object = intent_score.get("file_url")
-            file_name = intent_score.get("file_name")
-            intent_score = intent_score.get('message')
-        else:
-            file_object = None
-            file_name = None
-
-        await database_sync_to_async(Messages.objects.create)(
-                room = self.room,
-                content = intent_score,
-                sent_by = bot,
-                is_bot = True
-        )
-
-        await self.channel_layer.group_send(
-            self.room_group_name,
-            {
-                "type" : "chat.message",
-                "message": intent_score,
-                "file_object": file_object,
-                "is_bot":True,
-                "file_name": file_name
-            }
-        )
-
 
     async def chat_message(self, event):
-
         msg = event["message"]
-        print("",msg)
+        print("Chat message called")
         if msg:
-            await self.send(text_data=json.dumps(event))
+            await self.send(text_data=json.dumps({
+                "message" : msg,
+                "is_bot" : False,
+                "sent_by" : self.user.first_name
+            }))
 
+        if self.user.email == event['sent_by']:
+            intent_score = await bot_conversation(user_query=msg,room_name=self.room_name)
+            bot = await get_user()
 
-        # host_url = self.scope['headers'][0][1].decode()
-        # intent_score = await bot_conversation(user_query=msg,room_name=self.room_name)
-        # bot = await get_bot_user()
+            print("Response from chatbot :",intent_score)
+            # Send message to WebSocket
+            
+            host_url = self.get_host_address()
+            if isinstance(intent_score,dict):
+                if intent_score.get("file_url"):
+                    file_object = host_url + intent_score.get("file_url")
+                else:
+                    file_object = None
+                file_name = intent_score.get("file_name")
+                intent_score = intent_score.get('message')
+            else:
+                file_object = None
+                file_name = None
         
-                
-        # print("Response from chatbot :",intent_score)
+            await database_sync_to_async(Messages.objects.create)(
+                    room = self.room,
+                    content = intent_score,
+                    sent_by = bot,
+                    is_bot = True,
+                    file_object = file_object,
+                    file_name = file_name
+            )
 
-        # # Send message to WebSocket
-        # if isinstance(intent_score, dict):
-        #     file_object = intent_score.get("file_url")
-        #     file_name = intent_score.get("file_name")
-        #     intent_score = intent_score.get('message')
-        # else:
-        #     file_object = None
-        #     file_name = None
+            await self.channel_layer.group_send(
+                self.room_group_name,
+                 {
+                    "type": "bot.message",
+                    "message": intent_score,
+                    "sent_by": "bot@procare.com",
+                    "is_bot": True,
+                    "file_name": file_name,
+                    "file_object": file_object,
+                }
+            )
 
-        # await database_sync_to_async(Messages.objects.create)(
-        #         room = self.room,
-        #         content = intent_score,
-        #         sent_by = bot,
-        #         is_bot = True
-        # )
+    async def bot_message(self, event):
+        msg = event["message"]
 
-        # await self.send(text_data=json.dumps({
-        #     "message": intent_score,
-        #     "file_object": file_object,
-        #     "is_bot":True,
-        #     "file_name": file_name
-        # }))
-
-
-
-
-
-
+        print("Chat bot message called", msg)
+        if msg:
+            await self.send(text_data=json.dumps(
+                {
+                    "type": "chat.message",
+                    "message": event['message'],
+                    "file_object": event['file_object'],
+                    "sent_by": event["sent_by"],
+                    "is_bot": True,
+                    "file_name": event['file_name']
+                }
+            ))
+        else:
+            return None
         
+    async def disconnect(self, close_code):
+        # Leave room group
+        await self.channel_layer.group_discard(self.room_group_name, self.channel_name)
+
+    def get_host_address(self):
+        for header in self.scope['headers']:
+            if header[0] == b'origin':
+                return header[1].decode('utf-8')
+        return None
+
+

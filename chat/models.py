@@ -1,6 +1,8 @@
 from django.db import models
 from django.contrib.auth import get_user_model
 import uuid
+import django
+
 User = get_user_model()
 
 
@@ -24,8 +26,7 @@ class Room(models.Model):
     is_matched = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True,null = True)
     owner = models.ForeignKey(User, related_name='owner_of',on_delete=models.CASCADE,null = True,default = None)
-
-
+    
     def __str__(self) -> str:
         return str(self.id)
 
@@ -44,11 +45,15 @@ class Room(models.Model):
 
 class Messages(models.Model):
     room = models.ForeignKey(Room, related_name='messages',on_delete=models.CASCADE,null=True)
-    content = models.CharField(max_length=2000)
+    content = models.TextField()
     is_bot = models.BooleanField(default=False)
     sent_by = models.ForeignKey(User, related_name="messages_sent", on_delete=models.DO_NOTHING)
+    file_object = models.URLField(default = None, null=True)
+    file_name = models.CharField(max_length=200,default = None, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
+    class Meta:
+        verbose_name_plural = 'messages'
     def __str__(self) -> str:
         return self.content
 
@@ -68,7 +73,17 @@ class File(models.Model):
             return self.name
         
 
+class ChatMessage(models.Model):
+    MESSAGE_TYPE_CHOICES = (
+        ('human', 'Human'),
+        ('ai', 'AI'),
+    )
+    room = models.ForeignKey(Room, related_name='chat_messages',on_delete=models.CASCADE,null=True)
+    message_type = models.CharField(max_length=5, choices=MESSAGE_TYPE_CHOICES,default = MESSAGE_TYPE_CHOICES[0])
+    content = models.TextField(default = None)
+    created_at = models.DateTimeField(auto_now_add=True)
+    
 
-
-
+    def __str__(self):
+        return f"{self.content}"
     

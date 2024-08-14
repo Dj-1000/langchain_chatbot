@@ -52,12 +52,17 @@ def logout(request):
     auth.logout(request)
     return redirect("login")
 
+from collections import defaultdict
 @login_required
 def dashboard(request):
     user = User.objects.get(id = request.user.id)
-    rooms_with_user = Room.objects.filter(Q(member=user) | Q(owner = user)).all()
-    users = [room.member for room in rooms_with_user.member.all()]
-    return render(request,'dashboard.html',{'rooms_with_user':rooms_with_user})
+    rooms_with_user = Room.objects.filter(member=user).all()
+
+    context = {
+        "rooms_with_user" : rooms_with_user
+    }
+
+    return render(request,'dashboard.html',context=context)
     
 
 

@@ -28,7 +28,7 @@ class ChatUser(AbstractUser):
     password = models.CharField(max_length=100)
     objects = CustomUserManager()
     USERNAME_FIELD = 'email'
-    REQUIRED_FIELDS=['username']
+    REQUIRED_FIELDS=[]
 
     def __str__(self) -> str:
         return self.email

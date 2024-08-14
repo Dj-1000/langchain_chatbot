@@ -7,3 +7,6 @@ migrations/
 db.sqlite3
 db*/
 *buffer
+/venv_openai
+
+settings.py

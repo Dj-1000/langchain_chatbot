@@ -7,7 +7,7 @@ from django.forms.widgets import PasswordInput, TextInput
 class CreateUserForm(UserCreationForm):
     class Meta:
         model = ChatUser
-        fields = ['email','password1','password2']
+        fields = ['first_name','last_name','email','password1','password2']
     
     
         

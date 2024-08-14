@@ -31,11 +31,21 @@
             <div class="bot-icon">
               <i class="fa-solid fa-robot fa-lg"></i>
             </div>
-            <div class="message bot-msg">{{ message.content }}</div>
+            <div class="message bot-msg">
+              {{ message.content }}
+              {% if message.file_object is not None %}
+              <div><a href="{{ message.file_object }}">{{ message.file_name }}</a></div>
+              {% endif %}
+            </div>
           </div>
           {% else %}
           <div class="msg-container justify-content-end">
-            <div class="message user-msg">{{ message.content }}</div>
+            <div class="message user-msg">
+              <div class="first_name">{{ message.sent_by.first_name }}</div>
+              <div class="message_content">
+                {{ message.content }}
+              </div>
+            </div>
             <div class="user-icon">
               <i class="fa-solid fa-user fa-lg"></i>
             </div>
@@ -79,10 +89,14 @@
       const roomName = JSON.parse(
         document.getElementById("room-id").textContent
       );
-      console.log(`wss://${window.location.host}/ws/chat/${roomName}/`);
-      const chatSocket = new WebSocket(
-        `ws://${window.location.host}/ws/chat/${roomName}/`
-      );
+      if (window.location.protocol === "https:") {
+        console.log(`wss://${window.location.host}/ws/chat/${roomName}/`)
+        var chatSocket = new WebSocket(`wss://${window.location.host}/ws/chat/${roomName}/`);
+      }
+      else  {
+        console.log(`ws://${window.location.host}/ws/chat/${roomName}/`)
+        var chatSocket = new WebSocket(`ws://${window.location.host}/ws/chat/${roomName}/`);
+      }
 
       chatSocket.onclose = function (e) {
         console.error("Chat socket closed unexpectedly");
@@ -101,21 +115,31 @@
           console.log("Received user message from user:", data);
 
           const userContainer = document.createElement("div");
-          userContainer.className = "msg-container justify-content-end";
-
-          // Create the outer bot-container div
           const userMsgDiv = document.createElement("div");
+          const firstName = document.createElement("div");
+          const messageDiv = document.createElement("div");
+
           const userIconDiv = document.createElement("div");
-
-          userMsgDiv.className = "message user-msg";
-          userMsgDiv.textContent = data.message;
-
-          userIconDiv.className = "user-icon";
           const iconElement = document.createElement("i");
+
+
+          userContainer.className = "msg-container justify-content-end";
+          userMsgDiv.className = "message user-msg";
+          firstName.className = "first_name";
+          messageDiv.className = "message_content";
+          userIconDiv.className = "user-icon";
           iconElement.className = "fa-solid fa-user fa-lg";
+
+
+          firstName.textContent = data.sent_by;
+          console.log("Sent by: " + data.sent_by);
+          messageDiv.textContent = data.message;
+
+          userMsgDiv.appendChild(firstName);
+          userMsgDiv.appendChild(messageDiv);
           userIconDiv.appendChild(iconElement);
 
-          // Append the bot-icon and bot-msg divs to the bot-container div
+          // Append the user-messages div
           userContainer.appendChild(userMsgDiv);
           userContainer.appendChild(userIconDiv);
 
@@ -144,7 +168,7 @@
           if (data.file_object) {
             const hostUrl = `${window.location.protocol}//${window.location.host}`;
             // Assuming data.file contains the relative file path
-            const fileUrl = `${hostUrl}${data.file_object}`;
+            const fileUrl = `${data.file_object}`;
 
             // Create anchor tag
             const anchorTag = document.createElement("a");
